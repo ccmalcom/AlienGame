@@ -15,11 +15,9 @@ const store = createStore(
 )
 
 ReactDOM.render(
-  <React.StrictMode>
     <Provider store={store}>
     <Game />
-    </Provider>
-  </React.StrictMode>,
+    </Provider>,
   document.getElementById('root')
 );
 
