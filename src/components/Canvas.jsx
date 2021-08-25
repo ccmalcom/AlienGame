@@ -10,13 +10,20 @@ import FlyingObject from './FlyingObject.jsx';
 import Heart from './Heart';
 import StartGame from './StartGame';
 import Title from './Title';
+import Leaderboard from './Leaderboard';
+import { signIn } from 'auth0-web';
 
 const Canvas = (props) => {
-    // const style = {
-    //     border: '1px solid black'
-    // };
     const gameHeight = 1200;
     const viewBox = [window.innerWidth / -2, 100 - gameHeight, window.innerWidth, gameHeight]
+    const lives = [];
+    for (let i=0; i < props.gameState.lives; i++){
+        const heartPosition = {
+            x: -180 - (i * 70),
+            y: 35
+        };
+        lives.push(<Heart key={i} position={heartPosition}/>)
+    }
 
     return (
         <svg
@@ -24,6 +31,7 @@ const Canvas = (props) => {
             preserveAspectRatio='xMaxYMax none'
             viewBox={viewBox}
             onMouseMove={props.trackMouse}
+            onClick={props.shoot}
         >
             <defs>
                 <filter id='shadow'>
@@ -32,13 +40,20 @@ const Canvas = (props) => {
             </defs>
             <Sky /> {/* SVG does not support z-index; relies on the order that elements are listed */}
             <Ground />
+            {props.gameState.cannonBalls.map(cannonBall =>(
+                <CannonBall
+                    key={cannonBall.id}
+                    position={cannonBall.position}
+                />
+            ))}
             <CannonPipe rotation={props.angle} />
             <CannonBase />
-            <CurrentScore score={15} />
+            <CurrentScore score={props.gameState.kills} />
             {!props.gameState.started &&
                 <g>
                     <StartGame onClick={() => props.startGame()} />
                     <Title />
+                    <Leaderboard currentPlayer={props.currentPlayer} authenticate={signIn} leaderboard={props.players} />
                 </g>
             }
 
@@ -48,6 +63,7 @@ const Canvas = (props) => {
                     position={flyingObject.position}
                 />
             ))}
+            {lives}
             {/* {props.gameState.started &&
                 <g>
                     <FlyingObject position={{ x: -150, y: -300 }} />
@@ -71,6 +87,24 @@ Canvas.propTypes = {
     }).isRequired,
     trackMouse: PropTypes.func.isRequired,
     startGame: PropTypes.func.isRequired,
+    currentPlayer: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        maxScore: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        picture: PropTypes.string.isRequired,
+    }),
+    players: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        maxScore: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        picture: PropTypes.string.isRequired,
+    })),
+    shoot: PropTypes.func.isRequired,
+};
+
+Canvas.defaultProps = {
+    currentPlayer: null,
+    players: null,
 };
 
 export default Canvas
