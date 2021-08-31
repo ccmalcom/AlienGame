@@ -28,7 +28,7 @@ import io from 'socket.io-client';
 Auth0.configure({
   domain: 'dev-x2zn23xz.us.auth0.com',
   clientID: 'an2POIWVK1yHxQliKyyxZMCdxAx1cFb3',
-  redirectUri: 'http://localhost:3000/',
+  redirectUri: 'https://www.chasemalcom.com/AlienGame/',
   responseType: 'token id_token',
   scope: 'openid profile manage:points',
   audience: 'https://chasemalcom.com/AlienGame/'
